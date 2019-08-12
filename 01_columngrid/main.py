@@ -144,6 +144,12 @@ class IndexHandler(tornado.web.RequestHandler):
 class FreeCADInputHandler(tornado.web.RequestHandler):
     def get(self):
 
+        # set default input data ranges
+        minl = 0.1  # 0.1 mm
+        maxl = 1000000  # 1'000'000 mm = 1 km
+        max_column_count = 150
+        # idea: use FreeCAD unit system to read the input data
+
         # get the input data
         cgd = ColumnGridData(
             h=self.get_argument("height"),
@@ -154,17 +160,77 @@ class FreeCADInputHandler(tornado.web.RequestHandler):
             nx=self.get_argument("countx"),
             ny=self.get_argument("county"),
         )
+        # the float int as well as all value checks could be in class init
+        # for now checks stay here and class members are changed directly
 
-        cgd.h = float(cgd.h)
-        cgd.wx = float(cgd.wx)
-        cgd.wy = float(cgd.wy)
-        cgd.dx = float(cgd.dx)
-        cgd.dy = float(cgd.dy)
-        cgd.nx = int(cgd.nx)
-        cgd.ny = int(cgd.ny)
+        # do some input value data checks
+        # values should be positive int or floats
+        # https://stackoverflow.com/a/38329481
+        if (
+            cgd.h.replace(".", "", 1).isdigit() is False
+            or cgd.wx.replace(".", "", 1).isdigit() is False
+            or cgd.wy.replace(".", "", 1).isdigit() is False
+            or cgd.dx.replace(".", "", 1).isdigit() is False
+            or cgd.dy.replace(".", "", 1).isdigit() is False
+            or cgd.nx.isdigit() is False
+            or cgd.ny.isdigit() is False
+        ):
+            print("Error, digit problem in input values")
+            self.render(
+                "wronginput.html",
+                valminl=minl,
+                valmaxl=maxl,
+                h=cgd.h,
+                w1=cgd.wx,
+                w2=cgd.wy,
+                ax=cgd.dx,
+                ay=cgd.dy,
+                nx=cgd.nx,
+                ny=cgd.ny,
+            )
+            return
+        else:
+            cgd.h = float(cgd.h)
+            cgd.wx = float(cgd.wx)
+            cgd.wy = float(cgd.wy)
+            cgd.dx = float(cgd.dx)
+            cgd.dy = float(cgd.dy)
+            cgd.nx = int(cgd.nx)
+            cgd.ny = int(cgd.ny)
 
-        print("Input values will be taken as they have been input!")
+        # gemetric value ranges
+        if (
+            (minl <= cgd.h <= maxl) is False
+            or (minl <= cgd.wx <= maxl) is False
+            or (minl <= cgd.wy <= maxl) is False
+            or (minl <= cgd.dx <= maxl) is False
+            or (minl <= cgd.dy <= maxl) is False
+        ):
+            print("Error, geometric values not in range")
+            self.render(
+                "wronginput.html",
+                valminl=minl,
+                valmaxl=maxl,
+                h=cgd.h,
+                w1=cgd.wx,
+                w2=cgd.wy,
+                ax=cgd.dx,
+                ay=cgd.dy,
+                nx=cgd.nx,
+                ny=cgd.ny,
+            )
+            return
+
+        print("Input values seam fine, we will continue!")
         column_count = cgd.nx * cgd.ny
+
+        # maximum allowed column count
+        if column_count > max_column_count:
+            print("Error, to many columns")
+            self.render(
+                "tomanycolumns.html", ncol=column_count, maxncol=max_column_count
+            )
+            return
 
         # run column grid script
         # this takes time, some other widget with saying how long to wait would be cool
