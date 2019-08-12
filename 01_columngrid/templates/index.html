@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head><title>Online BIM Services</title></head>
+    <body>
+        <h1>BIM column grid ceation tool.</h1>
+        <p>Values are in mm.<br>
+        <form method="get" action="/columngrid">
+            <p>height<br><input type="text" name="height" value="3500"></p>
+            <p>width 1<br><input type="text" name="width1" value="500"></p>
+            <p>width 2<br><input type="text" name="width2" value="400"></p>
+            <p>distance x<br><input type="text" name="distancex" value="1200"></p>
+            <p>distance y<br><input type="text" name="distancey" value="3800"></p>
+            <p>count x<br><input type="text" name="countx" value="5"></p>
+            <p>count y<br><input type="text" name="county" value="10"></p>
+            <p><br>
+            <input type="submit" value="Create column grid">
+        </form>
+        <p><br>
+        <p>On click on the button above a IFC-file and a FreeCAD-file will be created.<br>
+        <p>This runs on very poor hard ware! Depending on the count of columns added this may take a while.<br>
+    </body>
+</html>

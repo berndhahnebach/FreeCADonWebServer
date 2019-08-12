@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head><title>Online BIM Services</title></head>
+    <body>
+        <h1>BIM column grid ceation tool.</h1>
+        <p>An IFC and a FreeCAD file with {{ncol}} columns have been created.<br>
+        <p><br>
+        <p>Höhe = {{h}}<br>
+        <p>Breite 1 = {{w1}}<br>
+        <p>Breite 2 = {{w2}}<br>
+        <p>Abstand x = {{ax}}<br>
+        <p>Abstand y = {{ay}}<br>
+        <p>Anzahl x = {{nx}}<br>
+        <p>Anzahl y = {{ny}}<br>
+        <p><br>
+        <form method="get" action="/download/fcstd">
+            <input type="hidden" name="userid" value="{{val_userid}}">
+            <input type="submit" value="Download FCStd file">
+        </form>
+        <p><br>
+        <form method="get" action="/download/ifc">
+            <input type="hidden" name="userid" value="{{val_userid}}">
+            <input type="submit" value="Download IFC file">
+        </form>
+        <p><br>
+        <form method="get" action="/">
+            <input type="submit" value="Create another column grid">
+        </form> 
+    </body>
+</html>
